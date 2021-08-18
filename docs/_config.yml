@@ -1,0 +1,4 @@
+title: PyGoN
+theme: jekyll-theme-cayman
+plugins:
+- jekyll-remote-theme

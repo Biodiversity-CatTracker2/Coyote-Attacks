@@ -1,0 +1,12 @@
+newspaper3k>=0.2.8
+dill>=0.3.3
+pandas>=1.2.3
+rich>=10.7.0
+openpyxl>=3.0.7
+xlsxwriter>=3.0.1
+bottle>=0.12.19
+grip>=4.5.2
+pygooglenews>=0.1.2
+dateparser>=1.0.0
+pytz>=2021.1
+tabulate>=0.8.9
