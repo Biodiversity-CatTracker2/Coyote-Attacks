@@ -1,11 +1,10 @@
 ---
 layout: default
 title: "English (US and Canada) Results"
-permalink: /EN/
 ---
 
 
-<div style="text-align: right"> <a href="../ES">Switch to Spanish (México) Results</a></div>
+<div style="text-align: right"> <a href="./ES_results">Switch to Spanish (México) Results</a></div>
 
 ---
 

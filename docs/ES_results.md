@@ -1,7 +1,6 @@
 ---
 layout: default
 title: "Spanish (México) Results"
-permalink: /ES/
 ---
 
 
