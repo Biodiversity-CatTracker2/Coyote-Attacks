@@ -4,8 +4,9 @@
 .env
 Icon?
 *.log
-/logs/
-/data/
+logs/
+data/
+docs/.jekyll-cache/Jekyll/Cache
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
