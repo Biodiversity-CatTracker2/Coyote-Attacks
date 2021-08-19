@@ -11,10 +11,10 @@ import tempfile
 import time
 import warnings
 from collections import defaultdict, namedtuple
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from glob import glob
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, Union
 
 import dill
 import grip
@@ -28,19 +28,14 @@ class NoEntriesError(Exception):
     pass
 
 
-class Search:
-    def __init__(self,
-                 query: str,
-                 month: int,
-                 year: int,
-                 lang: str,
-                 country: str) -> None:
-        self.query = query
-        self.month = month
-        self.year = year
-        self.lang = lang
-        self.country = country
-        self.testing = False
+class Search():
+    def __init__(self, **kwargs) -> None:
+        self.query = kwargs.pop('query')
+        self.month = kwargs.pop('month')
+        self.year = kwargs.pop('year')
+        self.lang = kwargs.pop('lang')
+        self.country = kwargs.pop('country')
+        self.testing = kwargs.pop('testing')
 
     def create_date(self) -> str:
         if self.month <= 9:
@@ -63,7 +58,6 @@ class Search:
         last_day = Search.create_date(self)
         from_ = f'{self.year}-{self.month}-01'
         to_ = f'{self.year}-{self.month}-{last_day}'
-
         month_name = calendar.month_name[int(self.month)]
         console.rule(f'{month_name}, {self.year}')
 
@@ -99,7 +93,8 @@ class Search:
                 for k, v in article.items() if k not in exclude_keys
             }
 
-            article_obj = newspaper.Article(article['link'], language=self.lang)
+            article_obj = newspaper.Article(article['link'],
+                                            language=self.lang)
             try:
                 article_obj.download()
                 article_obj.parse()
@@ -127,17 +122,17 @@ class Search:
 
     def filename(self) -> str:
         Search.create_date(self)
+        sep_date = lambda ds: [int(x) for x in str(ds).split('-')]
         if self.testing:
             fname = f'{self.query}__results_{self.year}_{self.month}'
         else:
             fname = f'results_{self.year}_{self.month}'
         return fname
 
-    def mkdir_ifnot(self, subdir: str) -> str:
-        if self.lang.lower() == 'en':
-            path = f'data/{self.year}/{subdir}/EN'
-        elif self.lang.lower() == 'es':
-            path = f'data/{self.year}/{subdir}/ES'
+    def mkdir_ifnot(self, subdir: str, gh_pages: bool = False) -> str:
+        path = f'data/{self.year}/{subdir}/{self.lang.upper()}'
+        if gh_pages:
+            path = f'docs/{self.year}/{self.lang.upper()}'
         Path(path).mkdir(parents=True, exist_ok=True)
         return path
 
@@ -149,13 +144,13 @@ class Search:
 
 
 class ExportData(Search):
-    def __init__(self, data: NamedTuple, query: str, month: int,
-                 year: int, lang: str, country: str) -> None:
-        super().__init__(query, month, year, lang, country)
+    def __init__(self, data: NamedTuple, **kwargs) -> Union[None, Exception]:
+        super().__init__(**kwargs)
         self.data = data
         self.fname = Search.filename(self)
         if not self.data.raw['entries']:
-            raise NoEntriesError('Cannot export because no entries were found.')
+            raise NoEntriesError(
+                'Cannot export because no entries were found.')
 
     def to_pandas(self) -> pd.DataFrame:
         df = pd.DataFrame.from_dict(self.data.improved['results']['entries'])
@@ -170,16 +165,13 @@ class ExportData(Search):
     def to_excel(self) -> None:
         path = Search.mkdir_ifnot(self, 'excel')
         df = ExportData.to_pandas(self)
-        df.to_excel(f'{path}/{self.fname}.xlsx',
-                    encoding='utf-8-sig')
+        df.to_excel(f'{path}/{self.fname}.xlsx', encoding='utf-8-sig')
 
     def to_json(self) -> None:
         path_raw = Search.mkdir_ifnot(self, 'json/raw')
         path = Search.mkdir_ifnot(self, 'json')
-        with open(f'{path_raw}/raw/raw_{self.fname}.json',
-                  'w') as j:
+        with open(f'{path_raw}/raw/raw_{self.fname}.json', 'w') as j:
             json.dump(self.data.raw, j, indent=4)
-
         with open(f'{path}/{self.fname}.json', 'w') as j:
             json.dump(self.data.improved, j, indent=4, ensure_ascii=False)
 
@@ -189,7 +181,7 @@ class ExportData(Search):
         with open(f'{path}/{self.fname}.pkl', 'wb') as pkl:
             dill.dump(D, pkl)
 
-    def to_html(self, keep_md=False) -> str:
+    def to_html(self, keep_md: bool = False, to_ghpages: bool = False) -> str:
         def remove_bad_chrs(x: str) -> str:
             return x.replace('|', ' ').replace('\n', ' ').replace('  ', ' ')
 
@@ -231,35 +223,7 @@ class ExportData(Search):
         sys.stdout = stdout
         with open(html_path, 'r+') as f:
             lines = f.readlines()
+        if to_ghpages:
+            gh_path = Search.mkdir_ifnot(self, '', gh_pages=True)
+            shutil.copy2(html_path, gh_path)
         return lines
-
-
-if __name__ == '__main__':
-    os.chdir(Path(__file__).parent)
-    if sys.argv[1:]:
-        query = ' '.join(
-            [_item for _item in sys.argv[1:] if type(_item) is str])
-        for _item in sys.argv[1:]:
-            try:
-                if int(_item) <= 12:
-                    month = int(_item)
-                elif int(_item) > 12:
-                    year = int(_item)
-            except (TypeError, ValueError):
-                continue
-    else:
-        query = 'coyote (mordida OR ataque OR caza OR agresivo OR mordisco) intitle:coyote'
-        # month = 1
-        year = 2021
-        lang = 'es'
-        country = 'MX'
-        for month in range(1, 9):
-            args = query, month, year, lang, country
-            search = Search(*args)
-            search.testing = False
-            results = search.run()
-            try:
-                export = ExportData(results, *args)
-                export.to_html()
-            except NoEntriesError:
-                continue
