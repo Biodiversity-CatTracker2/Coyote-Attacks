@@ -2,7 +2,6 @@
 # coding: utf-8
 
 import json
-import string
 from datetime import date
 from pathlib import Path
 
@@ -40,12 +39,9 @@ def main(query: str, lang: str = 'en', country: str = 'US') -> None:
 
 
 if __name__ == '__main__':
-    main(
-        query=
-        'coyote (bite OR attack OR kill OR chase OR aggressive OR nip) intitle:coyote'
-    )
-    main(
-        query=
-        'coyote (mordida OR ataque OR caza OR agresivo OR mordisco) intitle:coyote',
-        lang='es',
-        country='MX')
+    query_en = 'coyote (bite OR attack OR kill OR chase OR aggressive OR ' \
+               'nip) intitle:coyote '
+    query_es = 'coyote (mordida OR ataque OR caza OR agresivo OR mordisco) ' \
+               'intitle:coyote '
+    main(query=query_en)
+    main(query=query_es, lang='es', country='MX')

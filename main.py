@@ -28,7 +28,7 @@ class NoEntriesError(Exception):
     pass
 
 
-class Search():
+class Search:
     def __init__(self, **kwargs) -> None:
         self.query = kwargs.pop('query')
         self.month = kwargs.pop('month')
@@ -179,9 +179,9 @@ class ExportData(Search):
 
     def to_pickle(self) -> None:
         path = Search.mkdir_ifnot(self, 'pickle')
-        D = self.data(self.data.raw, self.data.improved)
+        d = self.data(self.data.raw, self.data.improved)
         with open(f'{path}/{self.fname}.pkl', 'wb') as pkl:
-            dill.dump(D, pkl)
+            dill.dump(d, pkl)
 
     def to_html(self, keep_md: bool = False, to_ghpages: bool = False) -> str:
         def remove_bad_chrs(x: str) -> str:

@@ -8,7 +8,7 @@ app = bottle.Bottle()
 
 
 @bottle.get('/search')
-def search():
+def search_func():
     return '''
         <form action="/search" method="post">
             Query: <input name="query" type="text" />
@@ -24,11 +24,18 @@ def do_search():
     query = bottle.request.forms.get('query')
     month = int(bottle.request.forms.get('month'))
     year = int(bottle.request.forms.get('year'))
-    args = query, month, year
-    search = Search(*args)
-    search.testing = False
+    kwargs = {
+        'query': query,
+        'month': month,
+        'year': year,
+        'lang': 'es',
+        'country': 'US',
+        'testing': False,
+        'silent': True
+    }
+    search = Search(**kwargs)
     results = search.run()
-    export = ExportData(results, *args)
+    export = ExportData(results, **kwargs)
     lines = export.to_html()
     lines = ''.join(lines)
     return lines
