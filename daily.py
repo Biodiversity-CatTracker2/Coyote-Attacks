@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from main import Search, ExportData
 
 
-def main(query, lang='en', country='US'):
+def main(query: str, lang: str = 'en', country: str = 'US') -> None:
     yr, mo = [int(x) for x in str(date.today()).split('-')[:-1]]
     kwargs = {
         'query': query,
