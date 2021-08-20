@@ -6,16 +6,16 @@ from datetime import date
 
 from bs4 import BeautifulSoup
 
-from main import Search, ExportData
+from pygon import Search, ExportData
 
 
-def main(query: str, lang: str = 'en', country: str = 'US') -> None:
+def main(query: str, language: str = 'en', country: str = 'US') -> None:
     yr, mo = [int(x) for x in str(date.today()).split('-')[:-1]]
     kwargs = {
         'query': query,
         'month': mo,
         'year': yr,
-        'lang': lang,
+        'language': language,
         'country': country,
         'testing': False,
         'silent': True
@@ -25,7 +25,7 @@ def main(query: str, lang: str = 'en', country: str = 'US') -> None:
     cur_data = json.loads(json.dumps(results.raw, ensure_ascii=False))
     if mo <= 9:
         mo = f'0{mo}'
-    with open(f'docs/{yr}/{lang.upper()}/results_{yr}_{mo}.html') as h:
+    with open(f'docs/{yr}/{language}/results_{yr}_{mo}.html') as h:
         html_content = h.read()
     table_content = [[cell.text for cell in row('td')]
                      for row in BeautifulSoup(html_content, 'lxml')('tr')][1:]
@@ -34,7 +34,7 @@ def main(query: str, lang: str = 'en', country: str = 'US') -> None:
     if prev_len != cur_len:
         export = ExportData(results, **kwargs)
         export.to_html(to_ghpages=True)
-        print(lang, 'Found new results, exporting...')
+        print(language, 'Found new results, exporting...')
 
 
 if __name__ == '__main__':
@@ -43,4 +43,4 @@ if __name__ == '__main__':
     q_es = 'coyote (mordida OR ataque OR caza OR agresivo OR mordisco) ' \
            'intitle:coyote '
     main(query=q_en)
-    main(query=q_es, lang='es', country='MX')
+    main(query=q_es, language='es', country='MX')

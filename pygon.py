@@ -25,13 +25,17 @@ class NoEntriesError(Exception):
     pass
 
 
+class Count:
+    count = None
+
+
 class Search:
     def __init__(self, **kwargs) -> None:
         self.query = kwargs.pop('query')
         self.month = kwargs.pop('month')
         self.year = kwargs.pop('year')
-        self.lang = kwargs.pop('lang')
-        self.country = kwargs.pop('country')
+        self.language = kwargs.pop('language').lower()
+        self.country = kwargs.pop('country').upper()
         self.testing = kwargs.pop('testing')
         self.silent = kwargs.pop('silent')
 
@@ -63,7 +67,7 @@ class Search:
         :return: dictionary with metadata of the news articles
         """
         console = Console()
-        gn = GoogleNews(lang=self.lang, country=self.country)
+        gn = GoogleNews(lang=self.language, country=self.country)
 
         last_day = Search.create_date(self)
         from_ = f'{self.year}-{self.month}-01'
@@ -73,10 +77,12 @@ class Search:
 
         res = gn.search(self.query, from_=from_, to_=to_)
         count = len(res['entries'])
+        if count == 0:
+            Count.count = 0
         if count == 100:
-            console.print(f'Found +{count} entries')
+            console.print(f'Found +{count} articles')
         else:
-            console.print(f'Found {count} entries')
+            console.print(f'Found {count} articles')
         if count >= 100:
             res['entries'].clear()
             for day in range(1, last_day):
@@ -89,7 +95,7 @@ class Search:
                 res_1 = gn.search(self.query,
                                   from_=f'{self.year}-{self.month}-{day}',
                                   to_=f'{self.year}-{self.month}-'
-                                      f'{next_day}') # noqa
+                                  f'{next_day}')  # noqa
                 res['entries'].extend(res_1['entries'])
         return res
 
@@ -117,7 +123,7 @@ class Search:
             }
 
             article_obj = newspaper.Article(article['link'],
-                                            language=self.lang)
+                                            language=self.language)
             try:
                 article_obj.download()
                 article_obj.parse()
@@ -167,9 +173,9 @@ class Search:
         the github pages website directory
         :return: the path to the directory (and its parents, if applicable).
         """
-        path = f'data/{self.year}/{subdir}/{self.lang.upper()}'
+        path = f'data/{self.year}/{subdir}/{self.language.upper()}'
         if gh_pages:
-            path = f'docs/{self.year}/{self.lang.upper()}'
+            path = f'docs/{self.year}/{self.language.upper()}'
         Path(path).mkdir(parents=True, exist_ok=True)
         return path
 
@@ -186,24 +192,24 @@ class Search:
         return Data
 
 
-class CheckEmpty:
+class _CheckEmpty:
     def __init__(self, data: Type[NamedTuple]) -> None:
         self.data = data
 
-    def return_data(self) -> Union[NamedTuple, NoReturn]:
+    def return_data(self) -> Union[Type[NamedTuple], NoReturn]:
         if not self.data.raw['entries']:
             raise NoEntriesError(
-                'Cannot export because no entries were found.')
+                'Cannot export because no articles were found.')
         return self.data
 
 
 class ExportData(Search):
     def __init__(self, data: Type[NamedTuple], **kwargs) -> None:
         super().__init__(**kwargs)
-        self.data = CheckEmpty(data).return_data()
+        self.data = _CheckEmpty(data).return_data()
         self.fname = Search.filename(self)
 
-    def to_pandas(self) -> pd.DataFrame:
+    def _to_pandas(self) -> pd.DataFrame:
         df = pd.DataFrame.from_dict(self.data.improved['results']['entries'])
         df.columns = df.columns.str.capitalize()
         df['Published'] = pd.to_datetime(df.Published).dt.date
@@ -215,7 +221,7 @@ class ExportData(Search):
 
     def to_excel(self) -> None:
         path = Search.mkdir_ifnot(self, 'excel')
-        df = ExportData.to_pandas(self)
+        df = ExportData._to_pandas(self)
         df.to_excel(f'{path}/{self.fname}.xlsx', encoding='utf-8-sig')
 
     def to_json(self) -> None:
@@ -245,7 +251,7 @@ class ExportData(Search):
             slink = d["href"]
             return f'[{stitle}]({slink})'
 
-        df = ExportData.to_pandas(self)
+        df = ExportData._to_pandas(self)
         df['Summary'] = df.Summary.apply(remove_bad_chars)
         df['Title'] = df.Title.apply(remove_bad_chars)
         df['Link'] = df.Link.apply(md_link)
