@@ -16,7 +16,7 @@ def main(query: str, language: str = 'en', country: str = 'US') -> None:
         'month': mo,
         'year': yr,
         'language': language,
-        'country': country,
+        'country': country.upper(),
         'testing': False,
         'silent': True
     }
@@ -25,7 +25,7 @@ def main(query: str, language: str = 'en', country: str = 'US') -> None:
     cur_data = json.loads(json.dumps(results.raw, ensure_ascii=False))
     if mo <= 9:
         mo = f'0{mo}'
-    with open(f'docs/{yr}/{language}/results_{yr}_{mo}.html') as h:
+    with open(f'docs/{yr}/{language.upper()}/results_{yr}_{mo}.html') as h:
         html_content = h.read()
     table_content = [[cell.text for cell in row('td')]
                      for row in BeautifulSoup(html_content, 'lxml')('tr')][1:]
@@ -34,7 +34,7 @@ def main(query: str, language: str = 'en', country: str = 'US') -> None:
     if prev_len != cur_len:
         export = ExportData(results, **kwargs)
         export.to_html(to_ghpages=True)
-        print(language, 'Found new results, exporting...')
+        print(language.upper(), 'Found new results, exporting...')
 
 
 if __name__ == '__main__':
