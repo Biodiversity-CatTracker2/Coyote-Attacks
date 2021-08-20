@@ -36,7 +36,7 @@ def main(query: str, lang: str = 'en', country: str = 'US') -> None:
     if prev_len != cur_len:
         export = ExportData(results, **kwargs)
         export.to_html(to_ghpages=True)
-        print(lang, 'Founds new results, exporting...')
+        print(lang, 'Found new results, exporting...')
 
 
 if __name__ == '__main__':

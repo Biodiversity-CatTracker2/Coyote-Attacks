@@ -4,7 +4,7 @@ title: "Spanish (México) Results"
 ---
 
 
-<div style="text-align: right"> <a href="../EN">Switch to English (US and Canada) Results</a></div>
+<div style="text-align: right"> <a href="./EN_results">Switch to English (US and Canada) Results</a></div>
 
 ---
 
