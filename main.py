@@ -36,9 +36,10 @@ class Search():
         self.lang = kwargs.pop('lang')
         self.country = kwargs.pop('country')
         self.testing = kwargs.pop('testing')
+        self.silent = kwargs.pop('silent')
 
     def create_date(self) -> str:
-        if self.month <= 9:
+        if int(self.month) <= 9:
             self.month = f'0{self.month}'
         if int(self.month) in [1, 3, 5, 7, 8, 10, 12]:
             last_day = 31
@@ -102,7 +103,8 @@ class Search():
                 article['keywords'] = article_obj.keywords
                 article['summary'] = article_obj.summary
             except newspaper.article.ArticleException:
-                print(f'Skipped nlp for {article["title"]}...')
+                if not self.silent:
+                    print(f'Skipped nlp for {article["title"]}...')
                 article['keywords'] = []
                 article['summary'] = ''
             return article
@@ -170,7 +172,7 @@ class ExportData(Search):
     def to_json(self) -> None:
         path_raw = Search.mkdir_ifnot(self, 'json/raw')
         path = Search.mkdir_ifnot(self, 'json')
-        with open(f'{path_raw}/raw/raw_{self.fname}.json', 'w') as j:
+        with open(f'{path_raw}/raw_{self.fname}.json', 'w') as j:
             json.dump(self.data.raw, j, indent=4)
         with open(f'{path}/{self.fname}.json', 'w') as j:
             json.dump(self.data.improved, j, indent=4, ensure_ascii=False)
