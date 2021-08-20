@@ -24,8 +24,8 @@ jobs:
         sudo apt-get install libxml2-dev libxslt-dev -y
         sudo apt-get install libjpeg-dev zlib1g-dev libpng-dev -y
         pip install -r requirements.txt
-        pip install -U --no-deps dateparser>=1.0.0
-        pip install -U --no-deps feedparser>=6.0.8
+        pip install -U --no-deps "dateparser>=1.0.0"
+        pip install -U --no-deps "feedparser>=6.0.8"
         pip install sgmllib3k
         curl https://raw.githubusercontent.com/codelucas/newspaper/master/download_corpora.py | python3
     - name: Run daily update

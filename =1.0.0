@@ -1,9 +1,0 @@
-Requirement already satisfied: dateparser in /opt/hostedtoolcache/Python/3.9.5/x64/lib/python3.9/site-packages (0.7.6)
-Collecting dateparser
-  Downloading dateparser-1.0.0-py2.py3-none-any.whl (279 kB)
-Installing collected packages: dateparser
-  Attempting uninstall: dateparser
-    Found existing installation: dateparser 0.7.6
-    Uninstalling dateparser-0.7.6:
-      Successfully uninstalled dateparser-0.7.6
-Successfully installed dateparser-1.0.0
