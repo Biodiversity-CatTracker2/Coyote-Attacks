@@ -8,6 +8,7 @@ logs/
 data/
 docs/.jekyll-cache/Jekyll/Cache
 docs/_site
+.idea/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

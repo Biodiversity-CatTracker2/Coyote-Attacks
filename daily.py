@@ -3,7 +3,6 @@
 
 import json
 from datetime import date
-from pathlib import Path
 
 from bs4 import BeautifulSoup
 
@@ -39,9 +38,9 @@ def main(query: str, lang: str = 'en', country: str = 'US') -> None:
 
 
 if __name__ == '__main__':
-    query_en = 'coyote (bite OR attack OR kill OR chase OR aggressive OR ' \
-               'nip) intitle:coyote '
-    query_es = 'coyote (mordida OR ataque OR caza OR agresivo OR mordisco) ' \
-               'intitle:coyote '
-    main(query=query_en)
-    main(query=query_es, lang='es', country='MX')
+    q_en = 'coyote (bite OR attack OR kill OR chase OR aggressive OR ' \
+           'nip) intitle:coyote'
+    q_es = 'coyote (mordida OR ataque OR caza OR agresivo OR mordisco) ' \
+           'intitle:coyote '
+    main(query=q_en)
+    main(query=q_es, lang='es', country='MX')
