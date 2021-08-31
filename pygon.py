@@ -16,6 +16,7 @@ from typing import NamedTuple, Type, NoReturn, Union
 import dill
 import grip
 import newspaper
+import nltk
 import pandas as pd
 from pygooglenews import GoogleNews
 from rich.console import Console
@@ -40,10 +41,13 @@ class Search:
         self.silent = kwargs.pop('silent')
 
     def create_date(self) -> int:
-        """
+        """Creates formatted date string.
+
         Converts self.month and self.year to a zero-padded decimal number
-        string, and checks the number of days in self.month
-        :return: the number of days in a month
+        string, and checks the number of days in self.month.
+
+        Returns:
+            int: The number of days in a month
         """
         if int(self.month) <= 9:
             self.month = f'0{self.month}'
@@ -59,12 +63,15 @@ class Search:
         return last_day
 
     def request(self) -> dict:
-        """
+        """Fetches news articles from Google News.
+
         Searches for news articles using Google News API. If self.month has
         more than 100 entries, a separate request for each day of the month is
         sent (will only retrieve the first 100 entries if there is > 100
-        entry in a given day)
-        :return: dictionary with metadata of the news articles
+        entry in a given day).
+
+        Returns:
+            dict: A dictionary with metadata of the news articles.
         """
         console = Console()
         gn = GoogleNews(lang=self.language, country=self.country)
@@ -100,18 +107,30 @@ class Search:
         return res
 
     def improve_results(self, raw_data: dict) -> dict:
+        """Improves the raw results retrieved from Google News.
+
+        Removes redundant and unnecessary data from the API response,
+        and uses `Newspaper3k` to summarize the article and extract
+        keywords.
+
+        Args:
+            raw_data (dict): Data dictionary retrieved from `Search.request`.
+
+        Returns:
+            dict: A dictionary with the clean/improved data
         """
-        Removes redundant and unnecessary data from the API response, and uses
-        `Newspaper3k` to summarize the article and extract keywords.
-        :param raw_data: data dictionary retrieved from Search.request
-        :return: dictionary of the clean/improved data
-        """
-        def iterate_over_articles(article):
-            """
+        def iterate_over_articles(article: dict) -> dict:
+            """Helper function for iterating through articles.
+
             Inner function to be used later in a concurrent.futures loop to
-            execute calls asynchronously
-            :param article: a single raw dict item
-            :return: a clean and improved dict of the raw article dict
+            execute calls asynchronously.
+
+            Args:
+                article (dict): A single article dictionary.
+
+            Returns:
+                dict: A clean and improved dictionary with data from the raw
+                  dictionary.
             """
             exclude_keys = [
                 'title_detail', 'links', 'summary_detail', 'guidislink',
@@ -137,6 +156,12 @@ class Search:
                 article['summary'] = ''
             return article
 
+        try:
+            nltk.data.find('tokenizers/punkt')
+        except LookupError:
+            print('NLTK: resource punkt not found! Downloading...')
+            nltk.download('punkt')
+
         output_dict = defaultdict(dict)
         output_dict['feed'] = raw_data['feed']
         output_dict['results']['entries'] = entries = []
@@ -151,11 +176,14 @@ class Search:
         return output_dict
 
     def filename(self) -> str:
-        """
+        """Creates formatted string to be used as a name for the output file.
+
         Process self attributes to return a file name based on the month and
         year, if self.testing is "True," then the query is added to the file
         name.
-        :return: a string representing the file name
+
+        Returns:
+            str: A string representing the file name.
         """
         Search.create_date(self)
         if self.testing:
@@ -165,13 +193,17 @@ class Search:
         return fname
 
     def mkdir_ifnot(self, subdir: str, gh_pages: bool = False) -> str:
-        """
-        Creates a directory if the data directory does not exists
-        :param subdir: the data type: "json", "json/raw", "html", "pickle",
-        or "excel".
-        :param gh_pages: whether the output should be directly exported to
-        the github pages website directory
-        :return: the path to the directory (and its parents, if applicable).
+        """Creates a directory if the data directory does not exists.
+
+        Args:
+            subdir (str): The data type: "json", "json/raw", "html",
+              "pickle", or "excel".
+            gh_pages (bool, optional): whether the output  should be
+              directly exported to the github pages website directory.
+              Defaults to False.
+
+        Returns:
+            str: The path to the directory and its parents, if applicable.
         """
         path = f'data/{self.year}/{subdir}/{self.language.upper()}'
         if gh_pages:
@@ -180,11 +212,13 @@ class Search:
         return path
 
     def run(self) -> Type[NamedTuple]:
-        """
-        The main function of the class.
-        :return: a namedtuple with two dictionaries: raw (original API
-        response) and improved (without redundant/useless data, with a
-        summary and keywords for each article
+        """The main function of that runs the `Search` class.
+
+        Returns:
+            Type[NamedTuple]: a namedtuple with two dictionaries: raw (i.e.,
+              original API response) and improved (i.e., without
+              redundant/useless data, with a summary and keywords for each
+              article.
         """
         Data = namedtuple('Data', ['raw', 'improved'])
         Data.raw = Search.request(self)
@@ -197,6 +231,15 @@ class _CheckEmpty:
         self.data = data
 
     def return_data(self) -> Union[Type[NamedTuple], NoReturn]:
+        """Checks to see if there is any articles in the input data.
+
+        Returns:
+            Returns the input data as it is.
+
+        Raises:
+            NoEntriesError: An error raised when there is no articles in the
+              input data.
+        """
         if not self.data.raw['entries']:
             raise NoEntriesError(
                 'Cannot export because no articles were found.')
@@ -210,6 +253,11 @@ class ExportData(Search):
         self.fname = Search.filename(self)
 
     def _to_pandas(self) -> pd.DataFrame:
+        """Converts the output from dictionary to Pandas dataframe.
+
+        Returns:
+            pd.DataFrame: Pandas dataframe with the dictionary keys as columns.
+        """
         df = pd.DataFrame.from_dict(self.data.improved['results']['entries'])
         df.columns = df.columns.str.capitalize()
         df['Published'] = pd.to_datetime(df.Published).dt.date
@@ -220,11 +268,17 @@ class ExportData(Search):
         return df
 
     def to_excel(self) -> None:
+        """Exports the output to an excel sheet."""
         path = Search.mkdir_ifnot(self, 'excel')
         df = ExportData._to_pandas(self)
         df.to_excel(f'{path}/{self.fname}.xlsx', encoding='utf-8-sig')
 
     def to_json(self) -> None:
+        """Exports the output to two JSON files.
+
+        The function creates two exported files. One with the raw data and
+          one with the improved data.
+        """
         path_raw = Search.mkdir_ifnot(self, 'json/raw')
         path = Search.mkdir_ifnot(self, 'json')
         with open(f'{path_raw}/raw_{self.fname}.json', 'w') as j:
@@ -233,19 +287,60 @@ class ExportData(Search):
             json.dump(self.data.improved, j, indent=4, ensure_ascii=False)
 
     def to_pickle(self) -> None:
+        """Exports the output to a pickle file."""
         path = Search.mkdir_ifnot(self, 'pickle')
         d = self.data(self.data.raw, self.data.improved)
         with open(f'{path}/{self.fname}.pkl', 'wb') as pkl:
             dill.dump(d, pkl)
 
     def to_html(self, keep_md: bool = False, to_ghpages: bool = False) -> list:
+        """Exports the data to html files.
+
+        Convert output to markdown using GitHub markdown API, then create
+        html tables from the markdown files.
+
+        Args:
+            keep_md (bool, optional): Whether the markdown files should be
+              kept. Defaults to False.
+            to_ghpages (bool, optional): Whether to export the generated
+              html files to the github pages directory in the project.
+
+        Returns:
+            list: A list containing the html file lines.
+        """
         def remove_bad_chars(x: str) -> str:
+            """Cleans dictionary items to avoid conflict with markdown syntax.
+
+            Removes problematic characters that might break the markdown table.
+
+            Args:
+                x (str): The input string to be cleaned.
+
+            Returns:
+                str: The clean string.
+            """
             return x.replace('|', ' ').replace('\n', ' ').replace('  ', ' ')
 
         def md_link(link: str) -> str:
+            """Creates a generic hyperlink string in markdown.
+
+            Args:
+                link (str): The input link string.
+
+            Returns:
+                str: A hyperlink string in markdown.
+            """
             return f'[Link]({link})'
 
         def source(d: dict) -> str:
+            """Creates a hyperlink for the article source in markdown.
+
+            Args:
+                d (dict): The articles dictionary object.
+
+            Returns:
+                str: A hyperlink string in markdown.
+            """
             stitle = ''.join(
                 [' ' if x in list('()[]|') else x for x in d['title']])
             slink = d["href"]
