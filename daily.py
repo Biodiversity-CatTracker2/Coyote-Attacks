@@ -3,6 +3,7 @@
 
 import json
 from datetime import date
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 
@@ -22,19 +23,23 @@ def main(query: str, language: str = 'en', country: str = 'US') -> None:
     }
     search = Search(**kwargs)
     results = search.run()
+    export = ExportData(results, **kwargs)
     cur_data = json.loads(json.dumps(results.raw, ensure_ascii=False))
     if mo <= 9:
         mo = f'0{mo}'
-    with open(f'docs/{yr}/{language.upper()}/results_{yr}_{mo}.html') as h:
-        html_content = h.read()
-    table_content = [[cell.text for cell in row('td')]
-                     for row in BeautifulSoup(html_content, 'lxml')('tr')][1:]
-    prev_len = len(table_content)
-    cur_len = len(cur_data['entries'])
-    if prev_len != cur_len:
-        export = ExportData(results, **kwargs)
+    html_file = f'docs/{yr}/{language.upper()}/results_{yr}_{mo}.html'
+    if Path(html_file).exists():
+        with open(html_file) as h:
+            html_content = h.read()
+        table_content = [[cell.text for cell in row('td')]
+                         for row in BeautifulSoup(html_content, 'lxml')('tr')][1:]
+        prev_len = len(table_content)
+        cur_len = len(cur_data['entries'])
+        if prev_len != cur_len:
+            export.to_html(to_ghpages=True)
+            print(language.upper(), 'Found new results, exporting...')
+    else:
         export.to_html(to_ghpages=True)
-        print(language.upper(), 'Found new results, exporting...')
 
 
 if __name__ == '__main__':
