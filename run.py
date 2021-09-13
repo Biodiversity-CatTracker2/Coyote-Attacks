@@ -69,7 +69,7 @@ def main():
         if any2('Excel', selected_options):
             export.to_excel()
         if any2('JSON', selected_options):
-            export.to_excel()
+            export.to_json()
 
 
 if __name__ == '__main__':
