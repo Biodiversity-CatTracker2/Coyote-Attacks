@@ -22,7 +22,7 @@ from pygooglenews import GoogleNews
 from rich.console import Console
 
 
-class NoEntriesError(Exception):
+class NoEntriesExit(SystemExit):
     pass
 
 
@@ -241,8 +241,7 @@ class _CheckEmpty:
               input data.
         """
         if not self.data.raw['entries']:
-            raise NoEntriesError(
-                'Cannot export because no articles were found.')
+            raise NoEntriesExit(0)
         return self.data
 
 
