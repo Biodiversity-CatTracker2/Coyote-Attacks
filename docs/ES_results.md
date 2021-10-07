@@ -90,3 +90,5 @@ title: "Spanish (México) Results"
 [August, 2021](2021/ES/results_2021_08.html)
 
 [September, 2021](2021/ES/results_2021_09.html)
+
+[October, 2021](2021/ES/results_2021_10.html)
