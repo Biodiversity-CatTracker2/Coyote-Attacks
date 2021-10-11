@@ -44,7 +44,7 @@ title: "English (US and Canada) Results"
 
 ## 2020
 
-[January, 2020](2020/EN/results_2020_01.html)
+[January, 2020](2020/EN/results_2020_01)
 
 [February, 2020](2020/EN/results_2020_02.html)
 

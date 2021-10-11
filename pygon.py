@@ -356,6 +356,11 @@ class ExportData(Search):
         html_path = f'{path}/{self.fname}.html'
         new_name = f'{self.month}_{self.year} - {self.query}'
         with tempfile.NamedTemporaryFile() as fp:
+            fp.write('---\nlayout: default\ntitle:  results_2020_01\n'.encode(
+                'utf-8'))
+            fp.write(
+                'permalink: /2020/EN/results_2020_01\n---\n\n'.encode('utf-8'))
+            fp.write(f'Query: `{self.query}`\n\n\n'.encode('utf-8'))
             fp.write(md.encode('utf-8'))
             fp.seek(0)
             fp.read().decode('utf-8')
@@ -367,13 +372,22 @@ class ExportData(Search):
                         out_filename=html_path,
                         title=new_name,
                         quiet=True)
+            with open(html_path, 'r+') as f:
+                lines = f.readlines()
+                for line in lines:
+                    if 'GitHub rate limit reached - Grip' in line:
+                        html_path = html_path.replace('.html', '.md')
+                        shutil.copy2(fp.name, html_path)
+                        with open(html_path, 'r+') as f:
+                            lines = f.readlines()
+                        break
+
         stdout = sys.stdout
         with open(os.devnull, 'w') as f:
             sys.stdout = f
             grip.clear_cache()
         sys.stdout = stdout
-        with open(html_path, 'r+') as f:
-            lines = f.readlines()
+
         if to_ghpages:
             gh_path = Search.mkdir_ifnot(self, '', gh_pages=True)
             shutil.copy2(html_path, gh_path)
