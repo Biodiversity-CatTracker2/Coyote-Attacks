@@ -251,6 +251,47 @@ class ExportData(Search):
         self.data = _CheckEmpty(data).return_data()
         self.fname = Search.filename(self)
 
+    @staticmethod
+    def remove_bad_chars(x: str) -> str:
+        """Cleans dictionary items to avoid conflict with markdown syntax.
+
+        Removes problematic characters that might break the markdown table.
+
+        Args:
+            x (str): The input string to be cleaned.
+
+        Returns:
+            str: The clean string.
+        """
+        return x.replace('|', ' ').replace('\n', ' ').replace('  ', ' ')
+
+    @staticmethod
+    def md_link(link: str) -> str:
+        """Creates a generic hyperlink string in markdown.
+
+        Args:
+            link (str): The input link string.
+
+        Returns:
+            str: A hyperlink string in markdown.
+        """
+        return f'[Link]({link})'
+
+    @staticmethod
+    def source(d: dict) -> str:
+        """Creates a hyperlink for the article source in markdown.
+
+        Args:
+            d (dict): The articles dictionary object.
+
+        Returns:
+            str: A hyperlink string in markdown.
+        """
+        stitle = ''.join(
+            [' ' if x in list('()[]|') else x for x in d['title']])
+        slink = d["href"]
+        return f'[{stitle}]({slink})'
+
     def _to_pandas(self) -> pd.DataFrame:
         """Converts the output from dictionary to Pandas dataframe.
 
@@ -307,49 +348,11 @@ class ExportData(Search):
         Returns:
             list: A list containing the html file lines.
         """
-        def remove_bad_chars(x: str) -> str:
-            """Cleans dictionary items to avoid conflict with markdown syntax.
-
-            Removes problematic characters that might break the markdown table.
-
-            Args:
-                x (str): The input string to be cleaned.
-
-            Returns:
-                str: The clean string.
-            """
-            return x.replace('|', ' ').replace('\n', ' ').replace('  ', ' ')
-
-        def md_link(link: str) -> str:
-            """Creates a generic hyperlink string in markdown.
-
-            Args:
-                link (str): The input link string.
-
-            Returns:
-                str: A hyperlink string in markdown.
-            """
-            return f'[Link]({link})'
-
-        def source(d: dict) -> str:
-            """Creates a hyperlink for the article source in markdown.
-
-            Args:
-                d (dict): The articles dictionary object.
-
-            Returns:
-                str: A hyperlink string in markdown.
-            """
-            stitle = ''.join(
-                [' ' if x in list('()[]|') else x for x in d['title']])
-            slink = d["href"]
-            return f'[{stitle}]({slink})'
-
         df = ExportData._to_pandas(self)
-        df['Summary'] = df.Summary.apply(remove_bad_chars)
-        df['Title'] = df.Title.apply(remove_bad_chars)
-        df['Link'] = df.Link.apply(md_link)
-        df['Source'] = df.Source.apply(source)
+        df['Summary'] = df.Summary.apply(self.remove_bad_chars)
+        df['Title'] = df.Title.apply(self.remove_bad_chars)
+        df['Link'] = df.Link.apply(self.md_link)
+        df['Source'] = df.Source.apply(self.source)
         df.pop('Id')
         md = df.to_markdown()
         path = Search.mkdir_ifnot(self, 'html')
