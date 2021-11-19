@@ -91,3 +91,6 @@ title: "English (US and Canada) Results"
 [September, 2021](2021/EN/results_2021_09.html)
 
 [October, 2021](2021/EN/results_2021_10.html)
+
+[November, 2021](2021/EN/results_2021_11.html)
+
