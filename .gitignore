@@ -1,6 +1,3 @@
-# Custom
-debug.ipynb
-
 # Other
 .DS_Store
 .ini
@@ -12,6 +9,10 @@ data/
 docs/.jekyll-cache/Jekyll/Cache
 docs/_site
 .idea/
+debug.ipynb
+certs/
+ssl-proxy-linux-amd64
+nohup.out
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
