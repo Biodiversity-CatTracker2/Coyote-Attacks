@@ -292,6 +292,10 @@ class ExportData(Search):
         slink = d["href"]
         return f'[{stitle}]({slink})'
 
+    @staticmethod
+    def style_keywords(keywords_: list) -> str:
+        return ', '.join([f'`{keyword}`' for keyword in keywords_])
+
     def _to_pandas(self) -> pd.DataFrame:
         """Converts the output from dictionary to Pandas dataframe.
 

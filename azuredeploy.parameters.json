@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_coyotes_vm_name": {
+            "value": null
+        },
+        "disks_coyotes_vm_OsDisk_1_12dadca5e699473b88ee5cf5a0f3dd60_externalid": {
+            "value": null
+        },
+        "networkInterfaces_coyotes_vm196_externalid": {
+            "value": null
+        }
+    }
+}
