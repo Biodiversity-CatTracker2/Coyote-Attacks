@@ -51,7 +51,13 @@ def main(min_, max_):
     language = 'en' if language == 'English (US/Canada)' else 'es'
     country = 'US' if language == 'en' else 'MX'
 
+    if language == 'en':
+        query = 'coyote (bite OR attack OR kill OR chase OR aggressive OR nip) intitle:coyote'
+    else:
+        query = 'coyote (mordida OR ataque OR caza OR agresivo OR mordisco) intitle:coyote'
+
     kwargs = {
+        'query': query,
         'from_date': from_date,
         'to_date': to_date,
         'language': language,
