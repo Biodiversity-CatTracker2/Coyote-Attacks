@@ -15,4 +15,5 @@ streamlit>=0.79.0
 sgmllib3k>=1.0.0
 python-dotenv>=0.19.1
 psycopg2-binary>=2.9.2
-sqlalchemy>=1.4.26=
+sqlalchemy>=1.4.26
+streamlit-bokeh-events>=0.1.2
