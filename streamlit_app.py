@@ -1,10 +1,10 @@
 import datetime
 import os
-import webbrowser
 
 import streamlit as st
 import pandas as pd
 import sqlalchemy
+from bokeh.models.widgets import Div
 from dotenv import load_dotenv
 
 from pygon import Search, ExportData, Count
@@ -146,13 +146,16 @@ if __name__ == '__main__':
     st.sidebar.write('')
     db, min_, max_ = load_db()
     if st.sidebar.button('Source code 💻'):
-        webbrowser.open_new_tab(
-            'https://github.com/Biodiversity-CatTracker2/PyGoN')
+        js = "window.open('https://github.com/Biodiversity-CatTracker2/PyGoN')"
+        html = f'<img src onerror="{js}">'
+        div = Div(text=html)
+        st.bokeh_chart(div)
 
     if st.sidebar.button('Report a bug 🐛'):
-        webbrowser.open_new_tab(
-            'mailto:malyeta@ncsu.edu?subject=Bug%20Report%20%28Coyotes%20News%20Web%20App%29'
-        )
+        js = "window.open('mailto:malyeta@ncsu.edu?subject=Bug%20Report%20%28Coyotes%20News%20Web%20App%29')"
+        html = f'<img src onerror="{js}">'
+        div = Div(text=html)
+        st.bokeh_chart(div)
     st.sidebar.markdown('---')
     kwargs = main(min_, max_)
 
