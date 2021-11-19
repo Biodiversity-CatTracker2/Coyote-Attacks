@@ -2,7 +2,7 @@ version: "3"
 services:
   streamlit:
     build: .
-    command: "streamlit run streamlit_app.py --server.headless=true --server.port=80"
+    command: "streamlit run streamlit_app.py --server.headless=true --server.port=80 --theme.primaryColor '#bd93f9' --theme.backgroundColor '#282a36' --theme.secondaryBackgroundColor '#44475a' --theme.textColor '#f8f8f2'"
     ports:
       - 80:80
     volumes:
