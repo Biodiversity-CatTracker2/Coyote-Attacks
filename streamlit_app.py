@@ -90,15 +90,17 @@ def download_file_button(df):
 if __name__ == '__main__':
     style()
     kwargs = main()
-    search = Search(**kwargs)
-    results = search.run()
-    export = ExportData(results, **kwargs)
-    df, md = return_md_table(export)
+    print(kwargs)
+    if kwargs.get('query'):
+    	search = Search(**kwargs)
+    	results = search.run()
+    	export = ExportData(results, **kwargs)
+    	df, md = return_md_table(export)
 
-    with st.container():
-        st.markdown(md)
+    	with st.container():
+        	st.markdown(md)
 
-    st.sidebar.subheader('Request')
-    res = {k: v for k, v in kwargs.items() if k not in ['testing', 'silent']}
-    st.sidebar.write(res)
-    download_file_button(df)
+    	st.sidebar.subheader('Request')
+    	res = {k: v for k, v in kwargs.items() if k not in ['testing', 'silent']}
+    	st.sidebar.write(res)
+    	download_file_button(df)
