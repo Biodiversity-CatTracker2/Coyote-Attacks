@@ -143,7 +143,13 @@ if __name__ == '__main__':
         'https://img.shields.io/badge/microsoft%20azure-0089D6?style=for-the-badge&logo=microsoft-azure&logoColor=white',
         'https://azure.microsoft.com')
 
+    st.markdown(
+        f'###### Built with:<br>&nbsp;&nbsp;&nbsp;&nbsp;{streamlit_badge}&nbsp;&nbsp;{python_badge}&nbsp;&nbsp;{postgres_badge}&nbsp;&nbsp;{docker_badge}&nbsp;&nbsp;{azure_badge}',
+        unsafe_allow_html=True)
+
+    st.sidebar.image('https://brand.ncsu.edu/assets/logos/ncstate-brick-4x1-blk.png')
     st.sidebar.write('')
+
     db, min_, max_ = load_db()
     if st.sidebar.button('Source code 💻'):
         js = "window.open('https://github.com/Biodiversity-CatTracker2/PyGoN')"
