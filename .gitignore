@@ -10,7 +10,8 @@ docs/.jekyll-cache/Jekyll/Cache
 docs/_site
 .idea/
 debug.ipynb
-certs/
+certs/certificate.crt
+certs/private.key
 ssl-proxy-linux-amd64
 nohup.out
 
