@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 
 RUN mkdir ~/.streamlit
 
-COPY requirements.txt .//
+COPY requirements.txt ./
 #COPY config.toml ~/.streamlit/
 
 RUN pip install -r requirements.txt
