@@ -148,7 +148,7 @@ if __name__ == '__main__':
     #-------------------------------------------------------------------------
     st.sidebar.markdown('---')
     st.sidebar.subheader('Request')
-    kwargs.update({'total_results_count': len(df)})
+    kwargs.update({'query_results_count': len(df)})
     st.sidebar.json(kwargs)
     #-------------------------------------------------------------------------
     st.sidebar.markdown('---')
