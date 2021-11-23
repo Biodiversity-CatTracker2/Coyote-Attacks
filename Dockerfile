@@ -6,14 +6,9 @@ WORKDIR /usr/src/app
 
 RUN mkdir ~/.streamlit
 
-COPY requirements.txt ./
-COPY entrypoint.sh ./
+COPY requirements.txt .//
 #COPY config.toml ~/.streamlit/
-RUN mkdir certs
-ADD certs ./certs/
 
 RUN pip install -r requirements.txt
-RUN chmod +x entrypoint.sh
-RUN ./entrypoint.sh
 
 COPY . .
