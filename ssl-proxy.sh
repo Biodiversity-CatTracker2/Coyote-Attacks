@@ -3,7 +3,7 @@
 FILE=ssl-proxy-linux-amd64
 
 if [ -f "$FILE" ]; then
-    echo "$FILE exists."
+    echo "$FILE exists. Skipping download..."
 else
     curl -LJ "https://getbin.io/suyashkumar/ssl-proxy?os=linux" | tar xvz
 fi
