@@ -41,6 +41,7 @@ def download_file_button(df):
 
 @st.cache(allow_output_mutation=True)
 def load_db():
+    load_dotenv()
     psql = DB(os.environ['AZURE_POSTGRES_DB_STRING'])
     db = psql.select('postgres').connect()
     min_ = db.execute(
@@ -52,10 +53,12 @@ def load_db():
 
 def page_config():
     st.set_page_config(page_title='NCSU Biodiversity Lab: Coyote Search',
-    page_icon='🐺',
+    page_icon='favicon.ico',
     layout='wide',
     initial_sidebar_state='auto',
     menu_items={
+    'Get help': None,
+    'Report a Bug': None,
     'About': '#### [PyGon](https://github.com/Biodiversity-CatTracker2/PyGoN)\n'
     '###### NC State University & NC Museum of Natural Sciences\n' \
     'Maintained by [Mohammad Alyetama](https://github.com/Alyetama)\n' \
@@ -120,7 +123,6 @@ def main(min_, max_):
 if __name__ == '__main__':
     #-------------------------------------------------------------------------
     page_config()
-    load_dotenv()
     #-------------------------------------------------------------------------
     db, min_, max_ = load_db()
     kwargs = main(min_, max_)

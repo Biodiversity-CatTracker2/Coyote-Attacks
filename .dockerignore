@@ -1,0 +1,25 @@
+# Common
+README.md
+CHANGELOG.md
+docker-compose.yml
+Dockerfile
+
+# Git
+.git
+.gitattributes
+.gitignore
+
+# Secrets
+certs/
+
+# Other
+.DS_Store
+.ini
+Icon?
+*.log
+logs/
+data/
+.idea/
+ssl-proxy-linux-amd64
+nohup.out
+*.ipynb

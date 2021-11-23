@@ -15,6 +15,7 @@ ssl-proxy-linux-amd64
 nohup.out
 DigiCertGlobalRootCA.crt.pem
 *.ipynb
+favicon.ico
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
