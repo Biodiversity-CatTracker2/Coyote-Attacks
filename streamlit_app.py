@@ -155,3 +155,5 @@ if __name__ == '__main__':
     #-------------------------------------------------------------------------
     st.sidebar.markdown('---')
     download_file_button(df)
+    #-------------------------------------------------------------------------
+    st.sidebar.markdown('<p><small><a href="https://www.flaticon.com/premium-icon/coyote_2128189">Favicon source</a></small></p>', unsafe_allow_html=True)
