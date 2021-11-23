@@ -7,7 +7,6 @@ import sqlalchemy
 from bokeh.models.widgets import Div
 from dotenv import load_dotenv
 
-from pygon import Search, ExportData, Count
 from streamlit_style import Style
 
 
@@ -61,8 +60,9 @@ def page_config():
     '###### NC State University & NC Museum of Natural Sciences\n' \
     'Maintained by [Mohammad Alyetama](https://github.com/Alyetama)\n' \
     '---'})
-    st.markdown(Style.set_footer(), unsafe_allow_html=True)
-    st.markdown(Style.get_badges(), unsafe_allow_html=True)
+    style = Style()
+    st.markdown(style.set_footer(), unsafe_allow_html=True)
+    st.markdown(style.get_badges(), unsafe_allow_html=True)
     st.sidebar.image(
         'https://brand.ncsu.edu/assets/logos/ncstate-brick-4x1-blk.png')
     st.sidebar.write('')
