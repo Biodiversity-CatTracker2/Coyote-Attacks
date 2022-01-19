@@ -1,13 +1,14 @@
 import datetime
 import os
 
+import dateparser
 import streamlit as st
 import pandas as pd
 import sqlalchemy
 from bokeh.models.widgets import Div
 from dotenv import load_dotenv
 
-from streamlit_style import Style
+from style import Style
 
 
 class DB:
@@ -90,14 +91,14 @@ def main(min_, max_):
         from_date = st.sidebar.date_input('From',
                                           today_ - datetime.timedelta(days=30),
                                           key=0,
-                                          min_value=min_[0][2],
-                                          max_value=max_[0][2])
+                                          min_value=dateparser.parse(min_[0][2]),
+                                          max_value=dateparser.parse(max_[0][2]))
     with col2:
         to_date = st.sidebar.date_input('To',
-                                        max_[0][2],
+                                        dateparser.parse(max_[0][2]),
                                         key=1,
-                                        min_value=min_[0][2],
-                                        max_value=max_[0][2])
+                                        min_value=dateparser.parse(min_[0][2]),
+                                        max_value=dateparser.parse(max_[0][2]))
 
     language = st.sidebar.selectbox(
         'Language', ('English (US/Canada)', 'Spanish (México)'))
@@ -134,9 +135,10 @@ if __name__ == '__main__':
     df = pd.read_sql(
         f"SELECT * FROM {db_table} WHERE published BETWEEN \'{kwargs.get('from_date')}\' AND \'{kwargs.get('to_date')}\';",
         db)
-
     df.rename(columns=dict([(x, x.capitalize()) for x in df.columns]),
               inplace=True)
+    del df['Index']
+    df.reset_index(drop=True, inplace=True)
     placeholder = st.empty()
     placeholder_1 = st.empty()
 
