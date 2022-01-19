@@ -17,3 +17,6 @@ python-dotenv>=0.19.1
 psycopg2-binary>=2.9.2
 sqlalchemy>=1.4.26
 streamlit-bokeh-events>=0.1.2
+bokeh>=2.4.2
+dill>=0.3.4
+grip>=4.5.2
