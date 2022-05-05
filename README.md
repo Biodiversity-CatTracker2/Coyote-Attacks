@@ -1,6 +1,6 @@
 # PyGoN
 
-Dynamic app: https://coyote.eastus.cloudapp.azure.com/
+Dynamic app: https://coyote.cattracker.app/
 
 Static app: https://biodiversity-cattracker2.github.io/PyGoN/
 
