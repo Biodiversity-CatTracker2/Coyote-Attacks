@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 import hashlib
 import os
 from datetime import datetime
@@ -55,14 +58,14 @@ def main():
         }
     }
 
-    for language in languages:
+    for language, vals in languages.items():
 
         kwargs = {
-            'query': query,
+            'query': vals['query'],
             'month': int(datetime.now().strftime('%m')),
             'year': int(datetime.now().strftime('%Y')),
-            'language': language,
-            'country': country,
+            'language': vals['language'],
+            'country': vals['country'],
             'testing': False,
             'silent': True
         }
@@ -82,7 +85,7 @@ def main():
                       inplace=True)
             df.set_index('index', inplace=True)
             md = df.to_markdown()
-            df.to_sql(table, db, if_exists='append', index=False)
+            df.to_sql(vals['table'], db, if_exists='append', index=False)
         except pygon.NoEntriesExit:
             continue
 
