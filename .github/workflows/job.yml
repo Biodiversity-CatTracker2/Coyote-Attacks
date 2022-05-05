@@ -26,7 +26,7 @@ jobs:
         pip install -U --no-deps "feedparser>=6.0.8"
         pip install -U --no-deps "dateparser>=1.0.0"
         pip install pygooglenews --ignore-installed -U --no-deps
-    - name: Run auto_prediction_schedule.py
+    - name: Run job.py
       env: 
         AZURE_POSTGRES_DB_STRING: ${{ secrets.AZURE_POSTGRES_DB_STRING }}
       run: |
