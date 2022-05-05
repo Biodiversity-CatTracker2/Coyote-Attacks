@@ -13,7 +13,6 @@ certs/certificate.crt
 certs/private.key
 ssl-proxy-linux-amd64
 nohup.out
-DigiCertGlobalRootCA.crt.pem
 *.ipynb
 favicon.ico
 
