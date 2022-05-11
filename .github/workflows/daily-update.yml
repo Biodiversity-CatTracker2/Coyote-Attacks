@@ -30,4 +30,6 @@ jobs:
     - name: Run daily update
       run: |
         python daily.py
+        curl "https://gist.githubusercontent.com/Alyetama/be4c157f63ec538c8b62509b1961f0b0/raw/299d969aa1273c799889b72ff29b8d309625921e/fix_page_style.py" --output fix_page_style.py
+        python fix_page_style.py
     - uses: stefanzweifel/git-auto-commit-action@v4
