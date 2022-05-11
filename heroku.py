@@ -2,7 +2,7 @@ import os
 
 import bottle
 
-from pygon import Search, ExportData
+from google_news_api import Search, ExportData
 
 app = bottle.Bottle()
 

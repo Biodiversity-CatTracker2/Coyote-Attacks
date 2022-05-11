@@ -53,14 +53,14 @@ def load_db():
 
 
 def page_config():
-    st.set_page_config(page_title='NCSU Biodiversity Lab: Coyote Search',
+    st.set_page_config(page_title='NCSU Biodiversity Lab: Coyote Attacks News Search',
     page_icon='favicon.ico',
     layout='wide',
     initial_sidebar_state='auto',
     menu_items={
     'Get help': None,
     'Report a Bug': None,
-    'About': '#### [PyGon](https://github.com/Biodiversity-CatTracker2/PyGoN)\n'
+    'About': '#### [Coyote-Attacks](https://github.com/Biodiversity-CatTracker2/Coyote-Attacks)\n'
     '###### NC State University & NC Museum of Natural Sciences\n' \
     'Maintained by [Mohammad Alyetama](https://github.com/Alyetama)\n' \
     '---'})
@@ -71,7 +71,7 @@ def page_config():
         'https://brand.ncsu.edu/assets/logos/ncstate-brick-4x1-blk.png')
     st.sidebar.write('')
     if st.sidebar.button('Source code 💻'):
-        js = "window.open('https://github.com/Biodiversity-CatTracker2/PyGoN')"
+        js = "window.open('https://github.com/Biodiversity-CatTracker2/Coyote-Attacks')"
         html = f'<img src onerror="{js}">'
         div = Div(text=html)
         st.bokeh_chart(div)
@@ -137,8 +137,9 @@ if __name__ == '__main__':
         db)
     df.rename(columns=dict([(x, x.capitalize()) for x in df.columns]),
               inplace=True)
+    df.drop(columns=['Index'], inplace=True)
+    df.sort_values(by=['Published'], inplace=True, ascending=False)
     df.reset_index(drop=True, inplace=True)
-    df.sort_values(by=['Published'])
 
     placeholder = st.empty()
     placeholder_1 = st.empty()

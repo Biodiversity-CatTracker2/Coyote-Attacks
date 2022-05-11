@@ -6,7 +6,7 @@ import json
 import bullet
 from rich.console import Console
 
-from pygon import Search, ExportData, Count
+from google_news_api import Search, ExportData, Count
 
 
 class Check(bullet.Check):

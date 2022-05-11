@@ -1,8 +1,8 @@
-# PyGoN
+# Coyote-Attacks
 
 Dynamic app: https://coyote.cattracker.app/
 
-Static app: https://biodiversity-cattracker2.github.io/PyGoN/
+Static app: https://biodiversity-cattracker2.github.io/Coyote-Attacks/
 
 ```bash
 $ DOCKER_BUILDKIT=1 docker-compose up --detach --build

@@ -19,7 +19,7 @@ import sqlalchemy
 from dotenv import load_dotenv
 from tqdm import tqdm
 
-import pygon
+import google_news_api
 
 
 class DB:
@@ -64,9 +64,9 @@ def loop(vals, year, month):
     }
 
     try:
-        search = pygon.Search(**kwargs)
+        search = google_news_api.Search(**kwargs)
         results = search.run()
-        export = pygon.ExportData(results, **kwargs)
+        export = google_news_api.ExportData(results, **kwargs)
         df = export._to_pandas()
         df.drop(columns=['Id', 'Source'], inplace=True)
         df['Summary'] = df.Summary.apply(export.remove_bad_chars)
@@ -78,7 +78,7 @@ def loop(vals, year, month):
                   inplace=True)
         df.set_index('index', inplace=True)
         return df
-    except pygon.NoEntriesExit:
+    except google_news_api.NoEntriesExit:
         return
 
 
