@@ -8,9 +8,9 @@ import hashlib
 import os
 import signal
 import sys
-import time
 from datetime import datetime
 
+import nltk
 import numpy as np
 import pandas as pd
 import ray
@@ -148,26 +148,17 @@ def bing_news():
     endpoint = os.environ['BING_SEARCH_V7_ENDPOINT']
     headers = {'Ocp-Apim-Subscription-Key': subscription_key}
 
-    query = "coyote (bite OR attack OR kill OR chase OR aggressive OR nip) ' \
-    'intitle:coyote"
+    query = "coyote (bite OR attack OR kill OR chase OR aggressive OR nip) intitle:coyote"
 
     for mkt in tqdm(['en-CA', 'en-US']):
-        params = {
-            'q': query,
-            'mkt': mkt,
-            'count': 100,
-            'sortBy': 'Date'
-        }
+        params = {'q': query, 'mkt': mkt, 'count': 100, 'sortBy': 'Date'}
 
         try:
-            response = requests.get(endpoint,
-                                    headers=headers,
-                                    params=params)
+            response = requests.get(endpoint, headers=headers, params=params)
             response.raise_for_status()
 
             res = response.json()['value']
             df = pd.DataFrame.from_dict(res)
-            df[['name', 'url', 'datePublished']]
 
             types_ = {
                 'name': 'string',
@@ -175,10 +166,7 @@ def bing_news():
                 'datePublished': 'datetime64[ns]',
             }
 
-            types_ = {
-                k: v
-                for k, v in types_.items() if k in list(df.columns)
-            }
+            types_ = {k: v for k, v in types_.items() if k in list(df.columns)}
             df = df.astype(types_)
 
             df.rename(columns={
@@ -190,11 +178,11 @@ def bing_news():
             df['summary'] = np.nan
             df['keywords'] = np.nan
 
-            df['index'] = df['name'].apply(_hash)
+            print(df)
+            df['index'] = df['title'].apply(_hash)
 
             df = df[[
-                'index', 'title', 'link', 'published', 'keywords',
-                'summary'
+                'index', 'title', 'link', 'published', 'keywords', 'summary'
             ]]
 
             df['link'] = df.link.apply(lambda link: f'[Link]({link})')
@@ -217,5 +205,6 @@ def bing_news():
 
 if __name__ == '__main__':
     load_dotenv()
+    nltk.download('punkt')
     google_news()
     bing_news()
