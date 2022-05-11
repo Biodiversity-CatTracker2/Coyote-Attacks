@@ -18,7 +18,7 @@ class DB:
     def select(self, db_name):
         args = {
             'dbname': db_name,
-            'sslrootcert': 'DigiCertGlobalRootCA.crt.pem',
+            'sslrootcert': 'certs/DigiCertGlobalRootCA.crt.pem',
             'sslmode': 'verify-full'
         }
         db = sqlalchemy.create_engine(self.conn_string, connect_args=args)

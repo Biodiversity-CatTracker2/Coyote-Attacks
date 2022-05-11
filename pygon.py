@@ -13,6 +13,8 @@ from collections import defaultdict, namedtuple
 from pathlib import Path
 from typing import NamedTuple, Type, NoReturn, Union
 
+warnings.filterwarnings('ignore')
+
 import dill
 import grip
 import newspaper
@@ -294,7 +296,7 @@ class ExportData(Search):
 
     @staticmethod
     def style_keywords(keywords_: list) -> str:
-        return ', '.join([f'`{keyword}`' for keyword in keywords_])
+        return ', '.join([f'`{keyword}`' for keyword in sorted(keywords_)])
 
     def _to_pandas(self) -> pd.DataFrame:
         """Converts the output from dictionary to Pandas dataframe.
