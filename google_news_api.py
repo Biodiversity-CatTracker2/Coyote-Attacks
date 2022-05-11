@@ -32,14 +32,15 @@ class Count:
 
 
 class Search:
-    def __init__(self, **kwargs) -> None:
-        self.query = kwargs.pop('query')
-        self.month = kwargs.pop('month')
-        self.year = kwargs.pop('year')
-        self.language = kwargs.pop('language').lower()
-        self.country = kwargs.pop('country').upper()
-        self.testing = kwargs.pop('testing')
-        self.silent = kwargs.pop('silent')
+    def __init__(self, query, month, year, language, country, testing, silent,
+                 **kwargs) -> None:
+        self.query = query
+        self.month = month
+        self.year = year
+        self.language = language.lower()
+        self.country = country.upper()
+        self.testing = testing
+        self.silent = silent
 
     def create_date(self) -> int:
         """
