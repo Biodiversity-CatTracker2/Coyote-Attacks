@@ -109,3 +109,17 @@ title: "English (US and Canada) Results"
 [April, 2022](2022/EN/results_2022_04.html)
 
 [May, 2022](2022/EN/results_2022_05.html)
+
+[June, 2022](2022/EN/results_2022_06.html)
+
+[July, 2022](2022/EN/results_2022_07.html)
+
+[August, 2022](2022/EN/results_2022_08.html)
+
+[September, 2022](2022/EN/results_2022_09.html)
+
+[October, 2022](2022/EN/results_2022_10.html)
+
+[November, 2022](2022/EN/results_2022_11.html)
+
+[December, 2022](2022/EN/results_2022_12.html)

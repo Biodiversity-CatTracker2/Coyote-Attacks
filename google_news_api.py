@@ -274,7 +274,8 @@ class ExportData(Search):
             grip.export(path=fp.name,
                         out_filename=html_path,
                         title=new_name,
-                        quiet=True)
+                        quiet=True,
+                        password=os.getenv('GRIP_TOKEN'))
         stdout = sys.stdout
         with open(os.devnull, 'w') as f:
             sys.stdout = f

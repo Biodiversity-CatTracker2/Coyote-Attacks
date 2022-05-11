@@ -5,6 +5,7 @@ import json
 from datetime import datetime
 
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
 from google_news_api import Search, ExportData, NoEntriesError
 
@@ -30,11 +31,13 @@ def main(query: str, language: str = 'en', country: str = 'US') -> None:
             }
             search = Search(**kwargs)
             results = search.run()
+
             try:
                 export = ExportData(results, **kwargs)
                 export.to_html(to_ghpages=True)
             except NoEntriesError:
-                pass
+                if not results.raw['entries']:
+                    continue
 
             cur_data = json.loads(json.dumps(results.raw, ensure_ascii=False))
             if mo <= 9:
@@ -58,6 +61,7 @@ def main(query: str, language: str = 'en', country: str = 'US') -> None:
 
 
 if __name__ == '__main__':
+    load_dotenv()
     q_en = 'coyote (bite OR attack OR kill OR chase OR aggressive OR ' \
            'nip) intitle:coyote'
     q_es = 'coyote (mordida OR ataque OR caza OR agresivo OR mordisco) ' \
