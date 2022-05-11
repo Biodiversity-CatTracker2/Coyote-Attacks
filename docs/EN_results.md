@@ -87,3 +87,25 @@ title: "English (US and Canada) Results"
 [July, 2021](2021/EN/results_2021_07.html)
 
 [August, 2021](2021/EN/results_2021_08.html)
+
+[September, 2021](2021/EN/results_2021_09.html)
+
+[October, 2021](2021/EN/results_2021_10.html)
+
+[November, 2021](2021/EN/results_2021_11.html)
+
+[December, 2021](2021/EN/results_2021_12.html)
+
+---
+
+## 2022
+
+[January, 2022](2022/EN/results_2022_01.html)
+
+[February, 2022](2022/EN/results_2022_02.html)
+
+[March, 2022](2022/EN/results_2022_03.html)
+
+[April, 2022](2022/EN/results_2022_04.html)
+
+[May, 2022](2022/EN/results_2022_05.html)
