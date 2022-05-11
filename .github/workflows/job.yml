@@ -26,6 +26,8 @@ jobs:
         bash fix_pip_packages.sh
         rm "/opt/hostedtoolcache/Python/3.8.12/x64/lib/python3.8/site-packages/pygooglenews/__init__.py"
         curl "https://gist.githubusercontent.com/Alyetama/07af1ed69067d55e2721ae07ca60a1d6/raw/d2d68fcd40bb0343e3baa7fe05219b62bf82652c/__init__.py" --output "/opt/hostedtoolcache/Python/3.8.12/x64/lib/python3.8/site-packages/pygooglenews/__init__.py"
+        cat "/opt/hostedtoolcache/Python/3.8.12/x64/lib/python3.8/site-packages/pygooglenews/__init__.py"
+
     - name: Run job.py
       env: 
         AZURE_POSTGRES_DB_STRING: ${{ secrets.AZURE_POSTGRES_DB_STRING }}
