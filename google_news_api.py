@@ -13,8 +13,6 @@ from collections import defaultdict, namedtuple
 from pathlib import Path
 from typing import NamedTuple, Type, NoReturn, Union
 
-warnings.filterwarnings('ignore')
-
 import dill
 import grip
 import newspaper
@@ -22,6 +20,8 @@ import nltk
 import pandas as pd
 from pygooglenews import GoogleNews
 from rich.console import Console
+
+warnings.filterwarnings('ignore')
 
 
 class NoEntriesExit(SystemExit):
@@ -33,14 +33,15 @@ class Count:
 
 
 class Search:
-    def __init__(self, **kwargs) -> None:
-        self.query = kwargs.pop('query')
-        self.month = kwargs.pop('month')
-        self.year = kwargs.pop('year')
-        self.language = kwargs.pop('language').lower()
-        self.country = kwargs.pop('country').upper()
-        self.testing = kwargs.pop('testing')
-        self.silent = kwargs.pop('silent')
+    def __init__(self, query, month, year, language, country, testing, silent,
+                 **kwargs) -> None:
+        self.query = query
+        self.month = month
+        self.year = year
+        self.language = language.lower()
+        self.country = country.upper()
+        self.testing = testing
+        self.silent = silent
 
     def create_date(self) -> int:
         """Creates formatted date string.
@@ -387,8 +388,8 @@ class ExportData(Search):
                     if 'GitHub rate limit reached - Grip' in line:
                         html_path = html_path.replace('.html', '.md')
                         shutil.copy2(fp.name, html_path)
-                        with open(html_path, 'r+') as f:
-                            lines = f.readlines()
+                        with open(html_path, 'r+') as f2:
+                            lines = f2.readlines()
                         break
 
         stdout = sys.stdout
