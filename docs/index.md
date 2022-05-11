@@ -6,6 +6,6 @@ permalink: /
 
 ## Results
 
-[English (US and Canada)](./EN_results.html)
+[English (US)](./EN_results.html)
 
 [Spanish (México)](./ES_results.html)

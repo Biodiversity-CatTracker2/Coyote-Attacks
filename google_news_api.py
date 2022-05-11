@@ -20,6 +20,8 @@ import pandas as pd
 from pygooglenews import GoogleNews
 from rich.console import Console
 
+warnings.filterwarnings('ignore')
+
 
 class NoEntriesError(Exception):
     pass
@@ -41,8 +43,8 @@ class Search:
 
     def create_date(self) -> int:
         """
-        Converts self.month and self.year to a zero-padded decimal number
-        string, and checks the number of days in self.month
+        Converts month and year to a zero-padded decimal number
+        string, and checks the number of days in month
         :return: the number of days in a month
         """
         if int(self.month) <= 9:
@@ -60,7 +62,7 @@ class Search:
 
     def request(self) -> dict:
         """
-        Searches for news articles using Google News API. If self.month has
+        Searches for news articles using Google News API. If month has
         more than 100 entries, a separate request for each day of the month is
         sent (will only retrieve the first 100 entries if there is > 100
         entry in a given day)
@@ -103,7 +105,7 @@ class Search:
         """
         Removes redundant and unnecessary data from the API response, and uses
         `Newspaper3k` to summarize the article and extract keywords.
-        :param raw_data: data dictionary retrieved from Search.request
+        :param raw_data: data dictionary retrieved from request
         :return: dictionary of the clean/improved data
         """
         def iterate_over_articles(article):
