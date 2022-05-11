@@ -19,3 +19,7 @@ sqlalchemy>=1.4.26
 streamlit-bokeh-events>=0.1.2
 bokeh>=2.4.2
 grip>=4.5.2
+ray>=1.12.0
+requests>=2.27.1
+numpy>=1.22.3
+tqdm>=4.64.0

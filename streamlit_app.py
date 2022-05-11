@@ -137,8 +137,9 @@ if __name__ == '__main__':
         db)
     df.rename(columns=dict([(x, x.capitalize()) for x in df.columns]),
               inplace=True)
-    del df['Index']
     df.reset_index(drop=True, inplace=True)
+    df.sort_values(by=['Published'])
+
     placeholder = st.empty()
     placeholder_1 = st.empty()
 
