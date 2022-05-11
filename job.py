@@ -146,88 +146,73 @@ def bing_news():
 
     subscription_key = os.environ['BING_SEARCH_V7_SUBSCRIPTION_KEY']
     endpoint = os.environ['BING_SEARCH_V7_ENDPOINT']
+    headers = {'Ocp-Apim-Subscription-Key': subscription_key}
 
     query = "coyote (bite OR attack OR kill OR chase OR aggressive OR nip) ' \
     'intitle:coyote"
-    mkts = ['en-CA', 'en-US']
 
-    i = 0
-    since = 1262304000
+    for mkt in tqdm(['en-CA', 'en-US']):
+        params = {
+            'q': query,
+            'mkt': mkt,
+            'count': 100,
+            'sortBy': 'Date'
+        }
 
-    headers = {'Ocp-Apim-Subscription-Key': subscription_key}
+        try:
+            response = requests.get(endpoint,
+                                    headers=headers,
+                                    params=params)
+            response.raise_for_status()
 
-    for _ in tqdm(range(100)):
-        for _ in tqdm(range(10)):
-            for mkt in tqdm(mkts):
-                params = {
-                    'q': query,
-                    'mkt': mkt,
-                    'count': 100,
-                    'sortBy': 'Date',
-                    'offset': i,
-                    'since': since
-                }
+            res = response.json()['value']
+            df = pd.DataFrame.from_dict(res)
+            df[['name', 'url', 'datePublished']]
 
-                try:
-                    response = requests.get(endpoint,
-                                            headers=headers,
-                                            params=params)
-                    response.raise_for_status()
+            types_ = {
+                'name': 'string',
+                'url': 'string',
+                'datePublished': 'datetime64[ns]',
+            }
 
-                    res = response.json()['value']
-                    df = pd.DataFrame.from_dict(res)
+            types_ = {
+                k: v
+                for k, v in types_.items() if k in list(df.columns)
+            }
+            df = df.astype(types_)
 
-                    types_ = {
-                        'name': 'string',
-                        'url': 'string',
-                        'image': 'string',
-                        'description': 'string',
-                        'about': 'string',
-                        'mentions': 'string',
-                        'provider': 'string',
-                        'datePublished': 'datetime64[ns]',
-                        'category': 'string',
-                        'video': 'string',
-                    }
+            df.rename(columns={
+                'name': 'title',
+                'url': 'link',
+                'datePublished': 'published'
+            },
+                      inplace=True)
+            df['summary'] = np.nan
+            df['keywords'] = np.nan
 
-                    types_ = {
-                        k: v
-                        for k, v in types_.items() if k in list(df.columns)
-                    }
-                    df = df.astype(types_)
+            df['index'] = df['name'].apply(_hash)
 
-                    df.rename(columns={
-                        'name': 'title',
-                        'url': 'link',
-                        'datePublished': 'published'
-                    },
-                              inplace=True)
-                    df['summary'] = np.nan
-                    df['keywords'] = np.nan
+            df = df[[
+                'index', 'title', 'link', 'published', 'keywords',
+                'summary'
+            ]]
 
-                    df['index'] = df['name'].apply(_hash)
+            df['link'] = df.link.apply(lambda link: f'[Link]({link})')
+            df['published'] = df['published'].apply(lambda x: x.date())
+            df.set_index('index', inplace=True)
 
-
-                    df = df[[
-                        'index', 'title', 'link', 'published', 'keywords',
-                        'summary'
-                    ]]
-
-                    df['link'] = df.link.apply(lambda link: f'[Link]({link})')
-                    df['published'] = df['published'].apply(lambda x: x.date())
-                    df.set_index('index', inplace=True)
-
-                    existing_ids = []
-                    q_p = 'SELECT index FROM articles WHERE'
-                    for idx in df.index:
-                        q = f'{q_p} \'{idx}\' ~ index;'
-                        res = db.execute(q).fetchall()
-                        if res:
-                            existing_ids.append(idx)
-                    df = df[~df.index.isin(existing_ids)]
-
-                since += 86400
-        i += 100
+            existing_ids = []
+            q_p = 'SELECT index FROM articles WHERE'
+            for idx in df.index:
+                q = f'{q_p} \'{idx}\' ~ index;'
+                res = db.execute(q).fetchall()
+                if res:
+                    existing_ids.append(idx)
+            df = df[~df.index.isin(existing_ids)]
+        except Exception as e:
+            print('Unexpected exception!', '>' * 58)
+            print(e)
+            print('<' * 58, 'Unexpected exception!')
 
 
 if __name__ == '__main__':
