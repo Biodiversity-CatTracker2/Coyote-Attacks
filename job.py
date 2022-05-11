@@ -157,7 +157,7 @@ def bing_news():
     headers = {'Ocp-Apim-Subscription-Key': subscription_key}
 
     for _ in tqdm(range(100)):
-        for _ in tqdm(range(100)):
+        for _ in tqdm(range(10)):
             for mkt in tqdm(mkts):
                 params = {
                     'q': query,
@@ -176,10 +176,8 @@ def bing_news():
 
                     res = response.json()['value']
                     df = pd.DataFrame.from_dict(res)
-                    df['index'] = df.name.apply(_hash)
 
                     types_ = {
-                        'index': 'string',
                         'name': 'string',
                         'url': 'string',
                         'image': 'string',
@@ -206,6 +204,10 @@ def bing_news():
                               inplace=True)
                     df['summary'] = np.nan
                     df['keywords'] = np.nan
+
+                    df['index'] = df['name'].apply(_hash)
+
+
                     df = df[[
                         'index', 'title', 'link', 'published', 'keywords',
                         'summary'
@@ -223,13 +225,9 @@ def bing_news():
                         if res:
                             existing_ids.append(idx)
                     df = df[~df.index.isin(existing_ids)]
-                except Exception as ex:
-                    print(ex)
-                finally:
-                    time.sleep(1)
 
-            since += 86400
-    i += 100
+                since += 86400
+        i += 100
 
 
 if __name__ == '__main__':
