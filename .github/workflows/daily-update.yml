@@ -30,7 +30,15 @@ jobs:
         pip install -U --no-deps "feedparser>=6.0.8"
         pip install sgmllib3k
         curl https://raw.githubusercontent.com/codelucas/newspaper/master/download_corpora.py | python3
+        rm "/opt/hostedtoolcache/Python/3.8.12/x64/lib/python3.8/site-packages/pygooglenews/__init__.py"
+        curl "https://gist.githubusercontent.com/Alyetama/07af1ed69067d55e2721ae07ca60a1d6/raw/d2d68fcd40bb0343e3baa7fe05219b62bf82652c/__init__.py" --output "/opt/hostedtoolcache/Python/3.8.12/x64/lib/python3.8/site-packages/pygooglenews/__init__.py"
+        cat "/opt/hostedtoolcache/Python/3.8.12/x64/lib/python3.8/site-packages/pygooglenews/__init__.py"
+
     - name: Run daily update
+      env: 
+        AZURE_POSTGRES_DB_STRING: ${{ secrets.AZURE_POSTGRES_DB_STRING }}
+        BING_SEARCH_V7_SUBSCRIPTION_KEY: ${{ secrets.BING_SEARCH_V7_SUBSCRIPTION_KEY }}
+        BING_SEARCH_V7_ENDPOINT: ${{ secrets.BING_SEARCH_V7_ENDPOINT }}
       run: |
         python daily.py
         curl "https://gist.githubusercontent.com/Alyetama/be4c157f63ec538c8b62509b1961f0b0/raw/299d969aa1273c799889b72ff29b8d309625921e/fix_page_style.py" --output fix_page_style.py
