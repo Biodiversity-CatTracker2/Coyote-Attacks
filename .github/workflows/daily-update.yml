@@ -6,7 +6,7 @@ on:
       - gh-pages
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *'
+    - cron: '0 0 * * *'
 
 jobs:
   build:
@@ -48,4 +48,3 @@ jobs:
       with:
         commit_message: Automated Change
         branch: gh-pages
-        file_pattern: /home/runner/work/Coyote-Attacks/Coyote-Attacks/docs/**/*.html
