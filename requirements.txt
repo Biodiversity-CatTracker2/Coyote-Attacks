@@ -10,3 +10,4 @@ pygooglenews>=0.1.2
 tabulate>=0.8.9
 beautifulsoup4>=4.9.3
 bullet>=2.2.0
+python-dotenv
