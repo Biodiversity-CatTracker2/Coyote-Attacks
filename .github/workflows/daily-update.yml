@@ -1,6 +1,9 @@
 name: Daily update
 
 on:
+  push:
+    branches:
+      - gh-pages
   workflow_dispatch:
   schedule:
     - cron: '0 0 * * *'
