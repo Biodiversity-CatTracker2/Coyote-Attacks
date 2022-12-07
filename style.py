@@ -1,13 +1,17 @@
+from datetime import datetime
+
+
 class Style:
     def __init__(self):
         pass
 
     @staticmethod
     def set_footer():
-        return """<style>
-            footer {visibility: hidden;}
-            footer::before {
-                content:'© 2021 | NC State University & NC Museum of Natural Sciences | Developed and Maintained by Mohammad Alyetama'; 
+        current_year = datetime.today().year
+        return f"""<style>
+            footer {{visibility: hidden;}}
+            footer::before {{
+                content:'© {current_year} | NC State University & NC Museum of Natural Sciences | Developed and Maintained by Mohammad Alyetama'; 
                 visibility: visible;
                 position: fixed;
                 left: 1;
@@ -15,7 +19,7 @@ class Style:
                 bottom: 0;
                 text-align: center;
                 # color: green;
-            }
+            }}
         </style>"""
 
     @staticmethod
