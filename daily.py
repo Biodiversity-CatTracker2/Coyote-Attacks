@@ -7,7 +7,6 @@ import datetime
 import hashlib
 import os
 import signal
-import sqlite3
 import sys
 from datetime import datetime
 
@@ -23,19 +22,19 @@ from tqdm import tqdm
 import google_news_api
 
 
-# class DB:
+class DB:
 
-#     def __init__(self, conn_string):
-#         self.conn_string = conn_string
+    def __init__(self, conn_string):
+        self.conn_string = conn_string
 
-#     def select(self, db_name):
-#         connection = sqlite3.connect('coyote.db')
-#         db = connection.cursor()
-#         return db
-
-
-db = sqlite3.connect('coyote.db')
-# db = connection.cursor()
+    def select(self, db_name):
+        args = {
+            'dbname': db_name,
+            # 'sslrootcert': 'certs/DigiCertGlobalRootCA.crt.pem',
+            # 'sslmode': 'verify-full'
+        }
+        db = sqlalchemy.create_engine(self.conn_string, connect_args=args)
+        return db
 
 
 def keyboard_interrupt_handler(sig: int, _) -> None:
@@ -86,8 +85,8 @@ def loop(vals, year, month):
 def google_news():
     signal.signal(signal.SIGINT, keyboard_interrupt_handler)
 
-    # psql = DB(os.environ['AZURE_POSTGRES_DB_STRING'])
-    # db = psql.select('postgres').connect()
+    psql = DB(os.environ['POSTGRES_CON_STRING'])
+    db = psql.select('postgres').connect()
 
     languages = {
         'english': {
@@ -128,13 +127,16 @@ def google_news():
             for df in tqdm(presents, desc='Presents'):
                 if df is not None:
                     existing_ids = []
-                    # for idx in df.index:
-                    #     res = db.execute(
-                    #         f'SELECT index FROM articles WHERE \'{idx}\' ~ '
-                    #         'index;').one_or_none()
-                    #     if res:
-                    #         existing_ids.append(idx)
-                    # df = df[~df.index.isin(existing_ids)]
+                    try:
+                        for idx in df.index:
+                            res = db.execute(
+                                f'SELECT index FROM articles WHERE \'{idx}\' ~ '
+                                'index;').one_or_none()
+                            if res:
+                                existing_ids.append(idx)
+                    except sqlalchemy.exc.ProgrammingError:
+                        pass
+                    df = df[~df.index.isin(existing_ids)]
                     df.to_sql(vals['table'],
                               db,
                               if_exists='append',
@@ -142,8 +144,8 @@ def google_news():
 
 
 def bing_news():
-    # psql = DB(os.environ['AZURE_POSTGRES_DB_STRING'])
-    # db = psql.select('postgres').connect()
+    psql = DB(os.environ['AZURE_POSTGRES_DB_STRING'])
+    db = psql.select('postgres').connect()
 
     subscription_key = os.environ['BING_SEARCH_V7_SUBSCRIPTION_KEY']
     endpoint = os.environ['BING_SEARCH_V7_ENDPOINT']
@@ -164,8 +166,7 @@ def bing_news():
             types_ = {
                 'name': 'string',
                 'url': 'string',
-                # 'datePublished': 'datetime64[ns]',
-                'datePublished': 'str',
+                'datePublished': 'datetime64[ns]',
             }
 
             types_ = {k: v for k, v in types_.items() if k in list(df.columns)}
@@ -177,11 +178,10 @@ def bing_news():
                 'datePublished': 'published'
             },
                       inplace=True)
-            # df['summary'] = np.nan
-            # df['keywords'] = np.nan
-            df['summary'] = None
-            df['keywords'] = None
+            df['summary'] = np.nan
+            df['keywords'] = np.nan
 
+            print(df)
             df['index'] = df['title'].apply(_hash)
 
             df = df[[
@@ -189,28 +189,25 @@ def bing_news():
             ]]
 
             df['link'] = df.link.apply(lambda link: f'[Link]({link})')
-            # df['published'] = df['published'].apply(lambda x: x.date())
+            df['published'] = df['published'].apply(lambda x: x.date())
             df.set_index('index', inplace=True)
 
             existing_ids = []
             q_p = 'SELECT index FROM articles WHERE'
-            # for idx in df.index:
-            #     q = f'{q_p} \'{idx}\' ~ index;'
-            #     res = db.execute(q).fetchall()
-            #     if res:
-            #         existing_ids.append(idx)
-            # df = df[~df.index.isin(existing_ids)]
+            for idx in df.index:
+                q = f'{q_p} \'{idx}\' ~ index;'
+                res = db.execute(q).fetchall()
+                if res:
+                    existing_ids.append(idx)
+            df = df[~df.index.isin(existing_ids)]
         except Exception as e:
             print('Unexpected exception!', '>' * 58)
             print(e)
             print('<' * 58, 'Unexpected exception!')
-            raise e
-
-        print(len(df))
 
 
 if __name__ == '__main__':
     load_dotenv()
     nltk.download('punkt')
-    # google_news()
-    bing_news()
+    google_news()
+    # bing_news()

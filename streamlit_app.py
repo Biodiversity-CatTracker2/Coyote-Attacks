@@ -18,8 +18,8 @@ class DB:
     def select(self, db_name):
         args = {
             'dbname': db_name,
-            'sslrootcert': 'certs/DigiCertGlobalRootCA.crt.pem',
-            'sslmode': 'verify-full'
+            # 'sslrootcert': 'certs/DigiCertGlobalRootCA.crt.pem',
+            # 'sslmode': 'verify-full'
         }
         db = sqlalchemy.create_engine(self.conn_string, connect_args=args)
         return db
@@ -43,7 +43,7 @@ def download_file_button(df):
 @st.cache(allow_output_mutation=True)
 def load_db():
     load_dotenv()
-    psql = DB(os.environ['AZURE_POSTGRES_DB_STRING'])
+    psql = DB(os.environ['POSTGRES_CON_STRING'])
     db = psql.select('postgres').connect()
     min_ = db.execute(
         f'SELECT * FROM articles ORDER BY published ASC LIMIT 1;').fetchall()
